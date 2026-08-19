@@ -2,60 +2,23 @@ from datetime import timedelta, datetime, timezone
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Response, Cookie, HTTPException
-from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
-from jose import jwt, JWTError
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi.security import OAuth2PasswordRequestForm
 from starlette import status
 
-from database.models.User import User
+from .dependencies import db_dependency
 from .schemas import UserRegister
 from .service import create_user, authenticate_user, get_refresh_token, refresh_session
 from core.config import settings
 from core.security import create_access_token
-from database.database import get_db
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = APIRouter(prefix="/auth")
 
-
-async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)], db: AsyncSession = Depends(get_db)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"}
-    )
-
-    try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-
-        user_id = payload.get("sub")
-        if user_id is None:
-            raise credentials_exception
-
-        user_id = int(user_id)
-
-        user_model = await db.scalar(select(User).where(User.id == user_id))
-        if user_model is None:
-            raise credentials_exception
-
-    except (JWTError, ValueError):
-        raise credentials_exception
-
-    return user_model
-
-
-db_dependency = Annotated[AsyncSession, Depends(get_db)]
-user_dependency = Annotated[User, Depends(get_current_user)]
-
-oauth2_bearer = OAuth2PasswordBearer(tokenUrl="/auth/login")
-
-
-@router.post("/register", status_code=status.HTTP_201_CREATED)
+@router.post("/register", status_code=status.HTTP_201_CREATED,tags=["user"])
 async def register_user(db: db_dependency, user_register: UserRegister):
     await create_user(db, user_register)
 
 
-@router.post("/login")
+@router.post("/login",tags=["user","admin"])
 async def login_user(response: Response, db: db_dependency, form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     user = await authenticate_user(db, form_data.username, form_data.password)
 
@@ -76,7 +39,7 @@ async def login_user(response: Response, db: db_dependency, form_data: Annotated
     }
 
 
-@router.get("/refresh")
+@router.get("/refresh",tags=["user","admin"])
 async def refresh_access_token(db: db_dependency,
                                refresh_token: Annotated[str | None, Cookie()]):
     if refresh_token is None:

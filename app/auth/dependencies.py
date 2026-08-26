@@ -9,7 +9,7 @@ from starlette import status
 
 from core.config import settings
 from database.database import get_db
-from database.models.User import User
+from database.models.user import User
 
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl="/auth/login")
 

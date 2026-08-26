@@ -10,7 +10,7 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 
-from database.models.User import UserRole
+from database.models.user import UserRole
 
 # revision identifiers, used by Alembic.
 revision: str = '08ff414a8309'

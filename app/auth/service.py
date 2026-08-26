@@ -7,8 +7,8 @@ from starlette import status
 from .schemas import UserRegister
 from core.config import settings
 from core.security import hash_password, verify_password, create_refresh_token, hash_refresh_token
-from database.models.RefreshSession import RefreshSession
-from database.models.User import User
+from database.models.refresh_session import RefreshSession
+from database.models.user import User
 
 
 async def create_user(db: AsyncSession, user_data: UserRegister):

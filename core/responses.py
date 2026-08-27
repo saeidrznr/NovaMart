@@ -21,3 +21,15 @@ CATEGORY_NOT_FOUND = {status.HTTP_404_NOT_FOUND: {
         }
     }
 }}
+
+
+PRODUCT_NOT_FOUND = {status.HTTP_404_NOT_FOUND: {
+    "description": "Not Found",
+    "content": {
+        "application/json": {
+            "example": {
+                "detail": "Product not found"
+            }
+        }
+    }
+}}

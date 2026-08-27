@@ -8,8 +8,8 @@ from database.database import Base
 
 class UserRole(str, Enum):
     SUPERADMIN = "SUPERADMIN"
-    ADMIN = "admin"
-    USER = "user"
+    ADMIN = "ADMIN"
+    USER = "USER"
 
 
 class User(Base):

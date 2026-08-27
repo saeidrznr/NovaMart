@@ -21,6 +21,8 @@ The project is being developed as a practical backend project, covering modern b
 
 - [x] Project initialization
 - [x] FastAPI application setup
+- [x] Authentication & Authorization
+- [x] Category management
 
 ## 🎯 Goals & Roadmap
 

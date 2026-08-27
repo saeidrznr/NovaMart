@@ -6,10 +6,11 @@ from jose import jwt, JWTError
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
+from sqlalchemy import or_
 
 from core.config import settings
 from database.database import get_db
-from database.models.user import User
+from database.models.user import User, UserRole
 
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
@@ -40,5 +41,18 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)], db: As
     return user_model
 
 
-db_dependency = Annotated[AsyncSession, Depends(get_db)]
 user_dependency = Annotated[User, Depends(get_current_user)]
+
+
+async def get_current_admin(current_user: user_dependency):
+    if current_user.role not in [UserRole.ADMIN, UserRole.SUPERADMIN]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required"
+        )
+
+    return current_user
+
+
+db_dependency = Annotated[AsyncSession, Depends(get_db)]
+admin_dependency = Annotated[User, Depends(get_current_admin)]

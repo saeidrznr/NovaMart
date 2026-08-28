@@ -28,18 +28,18 @@ The project is being developed as a practical backend project, covering modern b
 
 ### 🔐 Authentication & Authorization
 
-- [ ] User registration
-- [ ] User login
-- [ ] JWT authentication
-- [ ] Refresh tokens
-- [ ] Role-based access control
-- [ ] Permission management
+- [x] User registration
+- [x] User login
+- [x] JWT authentication
+- [x] Refresh tokens
+- [x] Role-based access control
+- [x] Permission management
 
 ### 📦 Product Management
 
-- [ ] Product CRUD
-- [ ] Category management
-- [ ] Product variants
+- [x] Product CRUD
+- [x] Category management
+- [x] Product variants
 - [ ] Product images
 - [ ] Inventory management
 - [ ] Product search and filtering

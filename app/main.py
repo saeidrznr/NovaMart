@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from starlette.staticfiles import StaticFiles
 
+from core.config import settings
 from .auth import router as auth_router
 from .categories import router as category_router
 from .products import router as product_router
@@ -58,8 +59,8 @@ app.include_router(attributes_router.router)
 
 app.include_router(product_variants_router.router)
 
-
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+if settings.ENVIRONMENT == "development":
+    app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 @app.get("/")
 async def root():

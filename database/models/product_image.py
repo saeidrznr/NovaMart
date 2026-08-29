@@ -15,6 +15,7 @@ class ProductImage(Base):
 
     product_id: Mapped[int] = mapped_column(ForeignKey("product.id", ondelete="CASCADE"))
     image_url: Mapped[str] = mapped_column(String(500), nullable=False)
+    path: Mapped[str] = mapped_column(String(500), nullable=False)
     is_primary: Mapped[bool] = mapped_column(default=False, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     product: Mapped["Product"] = relationship(back_populates="images")

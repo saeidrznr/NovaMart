@@ -1,9 +1,13 @@
 from enum import Enum
 
 from sqlalchemy import String, Enum as SqlEnum
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database.database import Base
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .cart import Cart
 
 
 class UserRole(str, Enum):
@@ -19,3 +23,5 @@ class User(Base):
     username: Mapped[str] = mapped_column(__type_pos=String(50), unique=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(__type_pos=String(255), nullable=False)
     role: Mapped[UserRole] = mapped_column(__type_pos=SqlEnum(UserRole,name="user_role"), nullable=False, default=UserRole.USER)
+
+    cart:Mapped["Cart"] = relationship(back_populates="user")

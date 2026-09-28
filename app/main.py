@@ -7,6 +7,7 @@ from .categories import router as category_router
 from .products import router as product_router
 from .attributes import router as attributes_router
 from .product_variants import router as product_variants_router
+from .cart import router as cart_router
 
 tags_metadata = [
     {
@@ -30,6 +31,10 @@ tags_metadata = [
         "description": "Public variant endpoints",
     },
     {
+        "name": "cart",
+        "description": "cart endpoints",
+    },
+    {
         "name": "admin",
         "description": "Admin public operations",
     }
@@ -50,17 +55,22 @@ tags_metadata = [
         "name": "admin-variants",
         "description": "Admin operations for product variants",
     },
+    {
+        "name": "admin-cart",
+        "description": "Admin operations for cart",
+    },
 ]
 app = FastAPI(openapi_tags=tags_metadata)
 app.include_router(auth_router.router)
 app.include_router(category_router.router)
 app.include_router(product_router.router)
 app.include_router(attributes_router.router)
-
 app.include_router(product_variants_router.router)
+app.include_router(cart_router.router)
 
 if settings.ENVIRONMENT == "development":
     app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
 
 @app.get("/")
 async def root():

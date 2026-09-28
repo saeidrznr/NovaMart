@@ -6,9 +6,11 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database.database import Base
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from database.models.product import Product
     from database.models.variant_attribute import VariantAttribute
+    from cart_item import CartItem
 
 
 class ProductVariant(Base):
@@ -27,3 +29,4 @@ class ProductVariant(Base):
 
     product: Mapped["Product"] = relationship(back_populates="variants")
     attributes: Mapped[list["VariantAttribute"]] = relationship(back_populates="variant", cascade="all, delete-orphan")
+    cart_items: Mapped[list["CartItem"]] = relationship(back_populates="variant")

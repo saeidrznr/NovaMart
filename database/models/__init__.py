@@ -7,3 +7,5 @@ from .variant_attribute import VariantAttribute
 from .attribute import Attribute
 from .attribute_category import AttributeCategory
 from .product_image import ProductImage
+from .cart import Cart
+from .cart_item import CartItem

@@ -38,7 +38,6 @@ DUPLICATE_ATTRIBUTES = {status.HTTP_400_BAD_REQUEST: {
     }
 }}
 
-
 INTERNAL_SERVER_ERROR = {status.HTTP_500_INTERNAL_SERVER_ERROR: {
     "description": "Internal Server Error",
     "content": {
@@ -61,6 +60,17 @@ NOTHING_TO_UPDATE = {status.HTTP_400_BAD_REQUEST: {
     }
 }}
 
+QUANTITY_MUST_BE_POSITIVE = {status.HTTP_400_BAD_REQUEST: {
+    "description": "Bad Request",
+    "content": {
+        "application/json": {
+            "example": {
+                "detail": "Quantity must be positive"
+            }
+        }
+    }
+}}
+
 # conflict
 CATEGORY_ALREADY_EXISTS = _already_exists("Category")
 ATTRIBUTE_ALREADY_EXISTS = _already_exists("Attribute")
@@ -72,3 +82,4 @@ PRODUCT_NOT_FOUND = _not_found("Product")
 VARIANT_NOT_FOUND = _not_found("Variant")
 IMAGE_NOT_FOUND = _not_found("Image")
 PRODUCT_IMAGE_NOT_FOUND = _not_found("Product Image")
+CART_ITEM_NOT_FOUND = _not_found("Cart Item")

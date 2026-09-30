@@ -9,7 +9,8 @@ from .schemas import CreateProduct
 from .storage.base import Storage
 from ..auth.dependencies import db_dependency, get_current_admin
 
-router = APIRouter(prefix="/products", tags=["admin-products"])
+router = APIRouter(prefix="/products", tags=["products"])
+admin_router = APIRouter(prefix="/admin/products", tags=["admin-products"], dependencies=[Depends(get_current_admin)])
 
 
 @router.get("/", status_code=status.HTTP_200_OK, tags=["products"])
@@ -26,27 +27,27 @@ async def get_product(db: db_dependency, product_id: int):
     return result
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED, dependencies=[Depends(get_current_admin)])
+@admin_router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_product(db: db_dependency, create_data: CreateProduct):
     return await service.create_product(db, create_data)
 
 
-@router.put("/{product_id}", status_code=status.HTTP_204_NO_CONTENT,
-            dependencies=[Depends(get_current_admin)], responses={
-        **PRODUCT_NOT_FOUND
-    })
+@admin_router.put("/{product_id}", status_code=status.HTTP_204_NO_CONTENT,
+                  responses={
+                      **PRODUCT_NOT_FOUND
+                  })
 async def update_product(db: db_dependency, product_id: int, create_data: CreateProduct):
     return await service.update_product(db, product_id, create_data)
 
 
-@router.delete("/{product_id}", status_code=status.HTTP_204_NO_CONTENT,
-               dependencies=[Depends(get_current_admin)], responses={**PRODUCT_NOT_FOUND})
+@admin_router.delete("/{product_id}", status_code=status.HTTP_204_NO_CONTENT,
+                     responses={**PRODUCT_NOT_FOUND})
 async def delete_product(db: db_dependency, product_id: int):
     return await service.delete_product(db, product_id)
 
 
-@router.post("/{product_id}/images", status_code=status.HTTP_201_CREATED, dependencies=[Depends(get_current_admin)],
-             responses={**PRODUCT_NOT_FOUND, **INTERNAL_SERVER_ERROR})
+@admin_router.post("/{product_id}/images", status_code=status.HTTP_201_CREATED,
+                   responses={**PRODUCT_NOT_FOUND, **INTERNAL_SERVER_ERROR})
 async def upload_product_image(db: db_dependency, product_id: int, image: UploadFile = File(...),
                                is_primary: bool = Form(False), storage: Storage = Depends(get_storage)):
     return await service.upload_product_image(
@@ -58,15 +59,16 @@ async def upload_product_image(db: db_dependency, product_id: int, image: Upload
     )
 
 
-@router.put("/images/{image_id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(get_current_admin)],
-            responses={**IMAGE_NOT_FOUND, **INTERNAL_SERVER_ERROR, **NOTHING_TO_UPDATE})
+@admin_router.put("/images/{image_id}", status_code=status.HTTP_204_NO_CONTENT,
+                  responses={**IMAGE_NOT_FOUND, **INTERNAL_SERVER_ERROR, **NOTHING_TO_UPDATE})
 async def update_product_image(db: db_dependency, image_id: int, image: UploadFile = File(default=None),
                                is_primary: bool = Form(default=None), storage: Storage = Depends(get_storage)):
     return await service.update_product_image(db, storage, image_id, image, is_primary)
 
 
-@router.delete("/images/{image_id}", status_code=status.HTTP_204_NO_CONTENT,dependencies=[Depends(get_current_admin)],responses={
-    **PRODUCT_IMAGE_NOT_FOUND
-})
-async def delete_product_image(db: db_dependency,image_id: int,storage:Storage=Depends(get_storage)):
+@admin_router.delete("/images/{image_id}", status_code=status.HTTP_204_NO_CONTENT,
+                     responses={
+                         **PRODUCT_IMAGE_NOT_FOUND
+                     })
+async def delete_product_image(db: db_dependency, image_id: int, storage: Storage = Depends(get_storage)):
     return await service.delete_product_image(db, storage, image_id)

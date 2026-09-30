@@ -12,16 +12,12 @@ from .order import router as order_router
 
 tags_metadata = [
     {
-        "name": "user",
-        "description": "User endpoints",
+        "name": "auth",
+        "description": "Auth endpoints",
     },
     {
         "name": "categories",
         "description": "Public category endpoints",
-    },
-    {
-        "name": "attributes",
-        "description": "Public Attributes endpoints",
     },
     {
         "name": "products",
@@ -38,10 +34,6 @@ tags_metadata = [
     {
         "name": "order",
         "description": "order endpoints",
-    },
-    {
-        "name": "admin",
-        "description": "Admin public operations",
     }
     ,
     {
@@ -59,18 +51,17 @@ tags_metadata = [
     {
         "name": "admin-variants",
         "description": "Admin operations for product variants",
-    },
-    {
-        "name": "admin-cart",
-        "description": "Admin operations for cart",
-    },
+    }
 ]
 app = FastAPI(openapi_tags=tags_metadata)
 app.include_router(auth_router.router)
 app.include_router(category_router.router)
+app.include_router(category_router.admin_router)
 app.include_router(product_router.router)
-app.include_router(attributes_router.router)
+app.include_router(product_router.admin_router)
+app.include_router(attributes_router.admin_router)
 app.include_router(product_variants_router.router)
+app.include_router(product_variants_router.admin_router)
 app.include_router(cart_router.router)
 app.include_router(order_router.router)
 

@@ -11,14 +11,14 @@ from .service import create_user, authenticate_user, get_refresh_token, refresh_
 from core.config import settings
 from core.security import create_access_token
 
-router = APIRouter(prefix="/auth")
+router = APIRouter(prefix="/auth",tags=["auth"])
 
-@router.post("/register", status_code=status.HTTP_201_CREATED,tags=["user"])
+@router.post("/register", status_code=status.HTTP_201_CREATED)
 async def register_user(db: db_dependency, user_register: UserRegister):
     await create_user(db, user_register)
 
 
-@router.post("/login",tags=["user","admin"])
+@router.post("/login")
 async def login_user(response: Response, db: db_dependency, form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     user = await authenticate_user(db, form_data.username, form_data.password)
 
@@ -39,7 +39,7 @@ async def login_user(response: Response, db: db_dependency, form_data: Annotated
     }
 
 
-@router.get("/refresh",tags=["user","admin"])
+@router.get("/refresh")
 async def refresh_access_token(db: db_dependency,
                                refresh_token: Annotated[str | None, Cookie()]):
     if refresh_token is None:

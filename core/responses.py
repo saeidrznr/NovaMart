@@ -71,6 +71,17 @@ QUANTITY_MUST_BE_POSITIVE = {status.HTTP_400_BAD_REQUEST: {
     }
 }}
 
+CART_IS_EMPTY = {status.HTTP_400_BAD_REQUEST: {
+    "description": "Bad Request",
+    "content": {
+        "application/json": {
+            "example": {
+                "detail": "Cart must have at least one item"
+            }
+        }
+    }
+}}
+
 # conflict
 CATEGORY_ALREADY_EXISTS = _already_exists("Category")
 ATTRIBUTE_ALREADY_EXISTS = _already_exists("Attribute")
@@ -81,5 +92,6 @@ ATTRIBUTE_NOT_FOUND = _not_found("Attribute")
 PRODUCT_NOT_FOUND = _not_found("Product")
 VARIANT_NOT_FOUND = _not_found("Variant")
 IMAGE_NOT_FOUND = _not_found("Image")
+ORDER_NOT_FOUND = _not_found("Order")
 PRODUCT_IMAGE_NOT_FOUND = _not_found("Product Image")
 CART_ITEM_NOT_FOUND = _not_found("Cart Item")

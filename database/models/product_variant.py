@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from database.models.product import Product
     from database.models.variant_attribute import VariantAttribute
     from cart_item import CartItem
+    from database.models.order_item import OrderItem
 
 
 class ProductVariant(Base):
@@ -30,3 +31,4 @@ class ProductVariant(Base):
     product: Mapped["Product"] = relationship(back_populates="variants")
     attributes: Mapped[list["VariantAttribute"]] = relationship(back_populates="variant", cascade="all, delete-orphan")
     cart_items: Mapped[list["CartItem"]] = relationship(back_populates="variant")
+    order_items: Mapped[list["OrderItem"]] = relationship(back_populates="variant")

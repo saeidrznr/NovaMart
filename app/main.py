@@ -8,6 +8,7 @@ from .products import router as product_router
 from .attributes import router as attributes_router
 from .product_variants import router as product_variants_router
 from .cart import router as cart_router
+from .order import router as order_router
 
 tags_metadata = [
     {
@@ -33,6 +34,10 @@ tags_metadata = [
     {
         "name": "cart",
         "description": "cart endpoints",
+    },
+    {
+        "name": "order",
+        "description": "order endpoints",
     },
     {
         "name": "admin",
@@ -67,6 +72,7 @@ app.include_router(product_router.router)
 app.include_router(attributes_router.router)
 app.include_router(product_variants_router.router)
 app.include_router(cart_router.router)
+app.include_router(order_router.router)
 
 if settings.ENVIRONMENT == "development":
     app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")

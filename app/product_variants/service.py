@@ -1,3 +1,5 @@
+from typing import Sequence
+
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -5,17 +7,61 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from starlette import status
 
-from database.models import Product, AttributeCategory, ProductVariant, VariantAttribute
-from .schemas import CreateProductVariant, UpdateProductVariant
+from database.models import Product, AttributeCategory, ProductVariant, VariantAttribute, Attribute
+from .schemas import CreateProductVariant, UpdateProductVariant, VariantResponse, VariantAttributeResponse
 
 
-async def get_product_variants(db: AsyncSession, product_id: int):
+async def _get_product(db: AsyncSession, product_id: int):
     product: Product | None = await db.scalar(select(Product).where(Product.id == product_id))
     if product is None:
         raise HTTPException(status_code=404, detail="Product not found")
-    result = await db.scalars(select(ProductVariant).where(ProductVariant.product_id == product_id).options(
-        selectinload(ProductVariant.attributes)))
-    return result.all()
+    return product
+
+
+async def get_product_variants(db: AsyncSession, product_id: int):
+    await _get_product(db, product_id)
+    variants: Sequence[ProductVariant] = (
+        await db.scalars(select(ProductVariant).where(ProductVariant.product_id == product_id,
+                                                      ProductVariant.is_active.is_(True)).options(
+            selectinload(ProductVariant.attributes).selectinload(VariantAttribute.attribute).load_only(
+                Attribute.name)))).all()
+
+    result = []
+    for variant in variants:
+        attributes = []
+        for item in variant.attributes:
+            attr = VariantAttributeResponse(name=item.attribute.name, attribute_id=item.attribute_id, value=item.value)
+            attributes.append(attr)
+
+        variant_response = VariantResponse(sku=variant.sku, id=variant.id, in_stock=variant.stock > 0,
+                                           price=variant.price, attributes=attributes)
+        result.append(variant_response)
+    return result
+
+
+async def get_product_variants_for_admin(db: AsyncSession, product_id: int):
+    await _get_product(db, product_id)
+    variants: Sequence[ProductVariant] = (
+        await db.scalars(select(ProductVariant).where(ProductVariant.product_id == product_id).options(
+            selectinload(ProductVariant.attributes).selectinload(VariantAttribute.attribute).load_only(
+                Attribute.name)))).all()
+
+    result = []
+
+    for variant in variants:
+        attributes = []
+        for item in variant.attributes:
+            attr = VariantAttributeResponse(name=item.attribute.name, attribute_id=item.attribute_id, value=item.value)
+            attributes.append(attr)
+
+        variant_response = VariantResponse(sku=variant.sku, id=variant.id, stock=variant.stock,
+                                           created_at=variant.created_at,
+                                           price=variant.price,
+                                           is_active=variant.is_active, updated_at=variant.updated_at,
+                                           attributes=attributes)
+        result.append(variant_response)
+
+    return result
 
 
 async def create_variant(db: AsyncSession, product_id: int, create_data: CreateProductVariant):

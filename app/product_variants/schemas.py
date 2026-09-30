@@ -1,3 +1,4 @@
+from datetime import datetime
 from decimal import Decimal
 
 from pydantic import BaseModel, Field
@@ -22,3 +23,21 @@ class UpdateProductVariant(BaseModel):
     stock: int | None = Field(ge=0, default=None)
     attributes: list[VariantAttributeCreate] | None = Field(min_length=1, default=None)
     is_active: bool | None = Field(default=None)
+
+
+class VariantAttributeResponse(BaseModel):
+    value: str
+    name: str
+    attribute_id: int
+
+
+class VariantResponse(BaseModel):
+    sku: str
+    stock: int | None = None  # for admin
+    is_active: bool | None = None  # for admin
+    in_stock: bool | None = None  # for users
+    created_at: datetime | None = None  # for admin
+    updated_at: datetime | None = None  # for admin
+    id: int
+    price: Decimal
+    attributes: list[VariantAttributeResponse]
